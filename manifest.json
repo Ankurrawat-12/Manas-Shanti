@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Manas Shanti",
+  "version": "0.1.0",
+  "description": "Extension to make you get back to work",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  
+  "icons": {
+    "96": "/images/ManasShantiLogo.jpg"
+  },
+  "background":{
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/ManasShantiLogo.jpg",
+        "images/add.png",
+        "images/remove.png"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "/images/ManasShantiLogo.jpg",
+      "48": "/images/ManasShantiLogo.jpg"
+    },
+    "default_title": "Manas Shanti"
+  },
+  "chrome_url_overrides":{
+    "newtab": "http://www.youtube.com"
+  }
+}
