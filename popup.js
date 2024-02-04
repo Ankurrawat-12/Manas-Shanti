@@ -1,10 +1,11 @@
 import { Hostname, Default } from "./utils.js";
 
+const popup = ":)";
+console.log("🚀 ~ popup:", popup);
+
 let domains = [];
 let shantiMode = false;
 
-const popup = ":)";
-console.log("🚀 ~ popup:", popup);
 
 // Default();
 chrome.storage.sync.get("shanti Mode", (data) => {
@@ -152,7 +153,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("🚀 ~ document.addEventListener shantiMode = true");
         if (!domains.includes(hostname)) {
             // ! Redirect to the main page;
-            chrome.tabs.update({url: "http://www.ankurrawat.me"});
+            chrome.tabs.update({url: "https://anshupathak-88825.github.io/timer/"});
             console.log(
                 "🚀 ~ document.addEventListener ~ Redirecting hostname:",
                 hostname

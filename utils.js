@@ -13,6 +13,6 @@ export async function Hostname() {
 export function Default(){
     chrome.storage.sync.set({
         ["shanti Mode"]: false,
-        ["Domains"]: []
+        ["Domains"]: ["https://anshupathak-88825.github.io/timer/"]
     });
 }
