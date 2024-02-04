@@ -4,9 +4,6 @@
   "version": "0.1.0",
   "description": "Extension to make you get back to work",
   "permissions": ["storage", "tabs"],
-  "background": {
-    "service_worker": "background.js"
-  },
   "host_permissions": ["<all_urls>"],
   
   "icons": {
