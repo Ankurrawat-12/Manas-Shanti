@@ -4,21 +4,11 @@ const popup = ":)";
 console.log("🚀 ~ popup:", popup);
 
 const defaultSite = "anshupathak-88825.github.io";
-let domains = [];
+let domains = [defaultSite];
 let shantiMode = false;
-await Initialize();
 
 
 // Default();
-async function Initialize(){
-    await processData();
-    if(!domains.include(defaultSite)){
-        chrome.storage.sync.set({
-            ["Domains"]: [...domains, defaultSite],
-        });
-    }
-    
-};
 chrome.storage.sync.get("shanti Mode", (data) => {
     if (data["shanti Mode"]) shantiMode = data["shanti Mode"];
     else {
