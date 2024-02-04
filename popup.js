@@ -71,7 +71,7 @@ const WebSite = (container, hostname) => {
 const setWebsitesAttributes = (action, eventListener, control) => {
     console.log("🚀 ~ setWebsitesAttributes ~ action:", action);
     const controlElement = document.createElement("img");;
-    controlElement.src = chrome.runtime.getURL("images" + action + ".png");
+    controlElement.src = chrome.runtime.getURL("images/" + action + ".png");
     controlElement.title = action;
     controlElement.addEventListener("click", eventListener);
     control.appendChild(controlElement);
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let hostname = await Hostname();
     console.log("🚀 ~ document.addEventListener ~ hostname:", hostname);
 
-    const container = document.getElementById("container");
+    const container = document.getElementById("hostnames");
     chrome.storage.sync.get(["Allowed Sites"], (data) => {
         allowedSites = data["Allowed Sites"];
     });
