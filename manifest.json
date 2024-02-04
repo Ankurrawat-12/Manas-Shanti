@@ -4,13 +4,13 @@
   "version": "0.1.0",
   "description": "Extension to make you get back to work",
   "permissions": ["storage", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "host_permissions": ["<all_urls>"],
   
   "icons": {
     "96": "/images/ManasShantiLogo.jpg"
-  },
-  "background":{
-    "service_worker": "background.js"
   },
   "content_scripts": [
     {
@@ -35,8 +35,5 @@
       "48": "/images/ManasShantiLogo.jpg"
     },
     "default_title": "Manas Shanti"
-  },
-  "chrome_url_overrides":{
-    "newtab": "http://www.youtube.com"
   }
 }
