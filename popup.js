@@ -1,45 +1,42 @@
-import { Hostname } from "./utils.js";
+import { Hostname, Default } from "./utils.js";
 
-let allowedSites = [];
+let domains = [];
 let shantiMode = false;
 
 const popup = ":)";
 console.log("🚀 ~ popup:", popup);
 
+// Default();
 chrome.storage.sync.get("shanti Mode", (data) => {
-    if (data["shanti Mode"]) 
-        shantiMode = data["shanti Mode"];
-    else{
+    if (data["shanti Mode"]) shantiMode = data["shanti Mode"];
+    else {
         chrome.storage.sync.get(null, (data) => {
             data["shanti Mode"] = shantiMode;
-        
+
             chrome.storage.sync.set(data, () => {
                 console.log("🚀 ~ shantiMode:", shantiMode);
             });
-        });  
+        });
     }
-    console.log("🚀 ~ shantiMode:", shantiMode)
+    console.log("🚀 ~ shantiMode:", shantiMode);
+    document.getElementById("cb3-8").checked = shantiMode;
 });
 
-document.getElementById('cb3-8').checked = shantiMode;
-document.getElementById('cb3-8').addEventListener('change', toggleShantiMode);
-
-
+document.getElementById("cb3-8").addEventListener("change", toggleShantiMode);
 
 function toggleShantiMode() {
-    shantiMode = document.getElementById('cb3-8').checked;
+    shantiMode = document.getElementById("cb3-8").checked;
     chrome.storage.sync.get(null, (data) => {
         data["shanti Mode"] = shantiMode;
-    
+
         chrome.storage.sync.set(data, () => {
             console.log("🚀 ~ shantiMode:", shantiMode);
         });
-    });    
+    });
 }
 
-
 const WebSite = (container, hostname) => {
-    console.log("🚀 ~ WebSite ~ hostname:", hostname)
+    console.log("🚀 ~ WebSite ~ hostname:", hostname);
 
     const hostTitle = document.createElement("div");
     const control = document.createElement("div");
@@ -48,17 +45,15 @@ const WebSite = (container, hostname) => {
     hostTitle.textContent = hostname;
     control.className = "control";
 
-    if (allowedSites.includes(hostname)) {
+    if (domains.includes(hostname)) {
         hostTitle.className = "allowed " + "sites";
         setWebsitesAttributes("remove", removeSite, control);
-
-    }
-    else{
+    } else {
         hostTitle.className = "disallowed " + "sites";
         setWebsitesAttributes("add", addSite, control);
     }
 
-    websiteElement.id = "host-"+hostname;
+    websiteElement.id = "host-" + hostname;
     websiteElement.className = "website";
     websiteElement.setAttribute("data-hostname", hostname);
 
@@ -68,58 +63,126 @@ const WebSite = (container, hostname) => {
     console.log("🚀 ~ WebSite ~ container:", container);
 };
 
+
 const setWebsitesAttributes = (action, eventListener, control) => {
     console.log("🚀 ~ setWebsitesAttributes ~ action:", action);
-    const controlElement = document.createElement("img");;
+    const controlElement = document.createElement("img");
     controlElement.src = chrome.runtime.getURL("images/" + action + ".png");
+    controlElement.style.width = "40px";
+    controlElement.style.height = "40px";
     controlElement.title = action;
     controlElement.addEventListener("click", eventListener);
     control.appendChild(controlElement);
 };
 
 
-const addSite = async(e)=> {
+const addSite = async (e) => {
     const site = e.target.parentNode.parentNode.getAttribute("data-hostname");
+    console.log("🚀 ~ addSite ~ site:", site);
 
+    chrome.storage.sync.set({
+        ["Domains"]: [...domains, site],
+    });
+    await processData();
+
+    const websiteElement = document.getElementById("host-" + site);
+    const image = websiteElement.querySelector("img");
+
+    if (image) {
+        image.removeEventListener("click", addSite);
+        image.addEventListener("click", removeSite);
+        image.src = chrome.runtime.getURL("images/remove.png");
+        image.title = "Remove Site";
+    }
 };
 
-const removeSite = (e) => {
+
+const removeSite = async (e) => {
     const site = e.target.parentNode.parentNode.getAttribute("data-hostname");
+    console.log("🚀 ~ removeSite ~ site:", site);
+
+    const updatedDomains = domains.filter(domain => domain !== site);
+
+    chrome.storage.sync.set({
+        ["Domains"]: updatedDomains,
+    });
+
+    await processData();
+
+    const websiteElement = document.getElementById("host-" + site);
+    const image = websiteElement.querySelector("img");
+
+    if (image) {
+        image.removeEventListener("click", removeSite);
+        image.addEventListener("click", addSite);
+        image.src = chrome.runtime.getURL("images/add.png");
+        image.title = "Add Site";
+    }
 };
+
+async function getDomainsFromStorage() {
+    return new Promise((resolve) => {
+        chrome.storage.sync.get("Domains", (data) => {
+            const domains = data["Domains"] || [];
+            resolve(domains);
+        });
+    });
+}
+
+async function processData() {
+    try {
+        domains = await getDomainsFromStorage();
+        console.log("Domains:", domains);
+    } catch (error) {
+        console.error("Error retrieving domains:", error);
+    }
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
-
     console.log("🚀 ~ document.addEventListener ~ getting hostname.....");
     let hostname = await Hostname();
     console.log("🚀 ~ document.addEventListener ~ hostname:", hostname);
 
     const container = document.getElementById("hostnames");
-    chrome.storage.sync.get(["Allowed Sites"], (data) => {
-        allowedSites = data["Allowed Sites"];
-    });
+    await processData();
+
+    console.log("🚀 ~ document.addEventListener ~ domains:", domains);
 
     if (shantiMode) {
         console.log("🚀 ~ document.addEventListener shantiMode = true");
-        if (!allowedSites.includes(hostname)) {
+        if (!domains.includes(hostname)) {
             // ! Redirect to the main page;
-            console.log("🚀 ~ document.addEventListener ~ Redirecting hostname:", hostname)
+            chrome.tabs.update({url: "http://www.ankurrawat.me"});
+            console.log(
+                "🚀 ~ document.addEventListener ~ Redirecting hostname:",
+                hostname
+            );
         } else {
-            console.log("🚀 ~ document.addEventListener shantiMode = true HostName Not Found: ", hostname);
-            for (let i = 0; i < allowedSites.length; i++) {
-                WebSite(container, allowedSites[i]);
+            console.log(
+                "🚀 ~ document.addEventListener shantiMode = true HostName Found: ",
+                hostname
+            );
+            for (let i = 0; i < domains.length; i++) {
+                WebSite(container, domains[i]);
             }
         }
     } else {
         console.log("🚀 ~ document.addEventListener ~ shantiMode:", shantiMode);
-        if (allowedSites.includes(hostname)) {
-            console.log("🚀 ~ document.addEventListener shantiMode = false HostName Found: ", hostname);
-            for (let i = 0; i < allowedSites.length; i++) {
-                WebSite(container, allowedSites[i]);
+        if (domains.includes(hostname)) {
+            console.log(
+                "🚀 ~ document.addEventListener shantiMode = false HostName Found: ",
+                hostname
+            );
+            for (let i = 0; i < domains.length; i++) {
+                WebSite(container, domains[i]);
             }
         } else {
-            console.log("🚀 ~ document.addEventListener shantiMode = false HostName Not Found: ", hostname);
-            for (let i = 0; i < allowedSites.length; i++) {
-                WebSite(container, allowedSites[i]);
+            console.log(
+                "🚀 ~ document.addEventListener shantiMode = false HostName Not Found: ",
+                hostname
+            );
+            for (let i = 0; i < domains.length; i++) {
+                WebSite(container, domains[i]);
             }
             WebSite(container, hostname);
         }

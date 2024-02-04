@@ -129,3 +129,29 @@
     + .tgl-btn:active:after {
     left: 10%;
 }
+
+.control{
+    display: flex;
+    cursor: pointer;
+}
+
+.sites{
+    display: flex;
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding-top:auto;
+    padding-bottom:auto;
+}
+
+.website{
+    display: flex;
+
+    justify-content: flex-center;
+    align-items: center;
+}
+
+#img[title="Remove Site"]{
+    width: "5px";
+    height: "5px"
+}

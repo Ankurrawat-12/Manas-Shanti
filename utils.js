@@ -1,5 +1,5 @@
 export async function Hostname() {
-    
+
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
 
     let tabHostname = tabs[0].url.split("/")[2];
@@ -7,4 +7,12 @@ export async function Hostname() {
     console.log("🚀 ~ CurrentTab ~ typeof(tabHostname):", typeof(tabHostname))
 
     return tabHostname; 
+}
+
+
+export function Default(){
+    chrome.storage.sync.set({
+        ["shanti Mode"]: false,
+        ["Domains"]: []
+    });
 }
